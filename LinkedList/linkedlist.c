@@ -1,6 +1,11 @@
+/* Creado por André Michel Pozos Nieto - @AndreAndyP */
+/* Este es un ejemplo de cómo funciona una lista enlazada. Contiene las operaciones básicas. */
+/* Probado en Windows 10*/
+/* Una disculpa por la falta de acentos y signos de interrogación de apertura, no pude hacer que se mostraran en Windows*/
 #include <stdio.h>
 #include <stdlib.h>
 
+// Métodos para especificar la operación. No son importantes para la lista
 void agregar();
 void mostrar();
 void actualizar();
@@ -28,8 +33,8 @@ typedef struct Lista
 // La lista que se usa en todo el programa
 Lista *lista;
 
-Lista *crearLista(int datoInicial);
 /* Funciones de la lista */
+Lista *crearLista(int datoInicial);
 // Create
 void _agregarDatoInicio(int nuevoDato);
 void _agregarDatoFin(int nuevoDato);
@@ -46,10 +51,13 @@ void _eliminarEn(int posicion);
 // Utilidades varias
 void _generarListaEjemplo();
 void _vaciar();
+void _obtenerTamano();
+void _voltear();
 
 int main(int argc, char const *argv[])
 {
     int opc = 0;
+    // Menú para seleccionar la operación
     while (1)
     {
         printf("1) Agregar...\n");    // Create
@@ -205,6 +213,8 @@ void otros()
     int opc = 0;
     printf("1) Generar lista de ejemplo (0..9) (Eliminara la lista que este actualmente en uso)\n");
     printf("2) Vaciar lista\n");
+    printf("3) Obtener el tamano de la lista\n");
+    printf("4) Voltear (reverse) la lista\n");
     printf("Escoge una opcion: ");
     scanf("%d", &opc);
     switch (opc)
@@ -216,6 +226,15 @@ void otros()
     case 2:
         system("cls");
         _vaciar();
+        printf("-----Lista vacia-----\n");
+        break;
+    case 3:
+        system("cls");
+        _obtenerTamano();
+        break;
+    case 4:
+        system("cls");
+        _voltear();
         break;
     default:
         break;
@@ -240,7 +259,8 @@ Lista *crearLista(int datoInicial)
 
 Elemento *crearElemento(int nuevoDato)
 {
-    // Creamos un elemento nuevo
+    // Creamos un elemento nuevo y le asignamos el dato que va a tener e inicializamos la propiedad "siguiente" a nulo.
+    // La propiedad "siguiente" se va a usar después para enlazarse con el siguiente elemento
     Elemento *nuevo = (Elemento *)malloc(sizeof(Elemento));
     nuevo->dato = nuevoDato;
     nuevo->siguiente = NULL;
@@ -249,6 +269,7 @@ Elemento *crearElemento(int nuevoDato)
 
 void _agregarDatoInicio(int nuevoDato)
 {
+    // Creamos antes la lista si aún no existe
     if (lista == NULL)
     {
         lista = crearLista(nuevoDato);
@@ -257,6 +278,7 @@ void _agregarDatoInicio(int nuevoDato)
     // Creamos un nuevo elemento
     Elemento *nuevoElemento = crearElemento(nuevoDato);
 
+    // Obtenemos el inicio de la lista
     Elemento *inicioLista = lista->inicio;
 
     // Al nuevo elemento lo ligamos con el inicio de la lista
@@ -267,6 +289,7 @@ void _agregarDatoInicio(int nuevoDato)
 }
 void _agregarDatoFin(int nuevoDato)
 {
+    // Creamos antes la lista si aún no existe
     if (lista == NULL)
     {
         lista = crearLista(nuevoDato);
@@ -287,6 +310,12 @@ void _agregarDatoFin(int nuevoDato)
 
 void _agregarDatoEn(int posicion, int nuevoDato)
 {
+    if (posicion < 0)
+    {
+        printf("-----No se pueden posiciones negativas-----\n");
+        return;
+    }
+    // Creamos antes la lista si aún no existe
     if (lista == NULL)
     {
         lista = crearLista(nuevoDato);
@@ -347,6 +376,11 @@ void _mostrarLista()
 
 void _mostrarDatoEn(int posicion)
 {
+    if (posicion < 0)
+    {
+        printf("-----No se pueden posiciones negativas-----\n");
+        return;
+    }
     printf("-----\n");
     Elemento *it = lista->inicio;
 
@@ -368,10 +402,15 @@ void _mostrarDatoEn(int posicion)
 
 void _actualizarDatoEn(int posicion, int nuevoDato)
 {
+    if (posicion < 0)
+    {
+        printf("-----No se pueden posiciones negativas-----\n");
+        return;
+    }
     printf("-----\n");
     Elemento *it = lista->inicio;
 
-    // Al igual que en _mostrarDatoEn(), obtenemos el elemento solicitado
+    // Recorremos la lista hasta la posicion indicada
     for (int i = 0; i < posicion; i++)
     {
         it = it->siguiente;
@@ -438,6 +477,11 @@ void _eliminarAlFinal()
 
 void _eliminarEn(int posicion)
 {
+    if (posicion < 0)
+    {
+        printf("-----No se pueden posiciones negativas-----\n");
+        return;
+    }
     Elemento *it = lista->inicio;
 
     // Recorremos la lista hasta la posicion indicada MENOS 1.
@@ -453,6 +497,19 @@ void _eliminarEn(int posicion)
             printf("-----\n");
             return;
         }
+    }
+
+    // Debido a la forma del FOR, puede ser que obtengamos la referencia al último elemento
+    // Por ejemplo: que se quiera eliminar la posicion 5 de la lista [0, 1, 2, 3, 4]
+    // Entonces it correspondería a 4 y nuestro algoritmo de eliminacion no funcione
+    // Prevenimos eso con el siguiente if: verificamos que no estemos en el último elemento,
+    // es decir, el elemento cuyo "siguiente" es NULL
+    if (it->siguiente == NULL)
+    {
+        printf("-----\n");
+        printf("No hay ningun dato en esa posicion\n");
+        printf("-----\n");
+        return;
     }
 
     // Obtenemos el elemento que queremos eliminar
@@ -475,7 +532,7 @@ void _eliminarEn(int posicion)
 void _generarListaEjemplo()
 {
     int i = 0;
-    // Si la lista ya existe
+    // Si la lista ya existe, la vacíamos (en realidad la eliminamos)
     if (lista != NULL)
     {
         _vaciar();
@@ -483,6 +540,7 @@ void _generarListaEjemplo()
     lista = crearLista(i);
     i++;
 
+    // La llenamos con los elementos del 1 al 9
     while (i < 10)
     {
         _agregarDatoFin(i);
@@ -494,15 +552,71 @@ void _generarListaEjemplo()
 
 void _vaciar()
 {
+    // Obtenemos el primer elemento de la lista
     Elemento *it = lista->inicio;
+
+    // La recorremos...
     while (it != NULL)
     {
         Elemento *actual = it;
         it = it->siguiente;
+        // ... y eliminamos cada elemento
         free(actual);
     }
+    // Eliminamos las referencias al inicio y al fin de la lista
     lista->inicio = NULL;
     lista->fin = NULL;
+
+    // Eliminamos también la propia lista y la referencia a ella
     free(lista);
-    printf("-----Lista vacia-----\n");
+    lista = NULL;
+}
+
+void _obtenerTamano()
+{
+    if (lista == NULL || lista->inicio == NULL)
+    {
+        printf("-----La lista esta vacia-----\n");
+        return;
+    }
+    int numElementos = 0;
+    // Recorremos la lista: empezamos en el inicio y vamos avanzando a través de los elementos
+    // mediante la propiedad "siguiente" de cada elemento
+    // el límite es cuando el siguiente elemento sea NULL.
+    // El elemento que tiene NULL en "siguiente" es el fin de la lista
+    for (Elemento *it = lista->inicio; it != NULL; it = it->siguiente)
+    {
+        // Y vamos contando el número de elementos que nos vamos encontrando
+        ++numElementos;
+    }
+    printf("-----Numero de elementos en la lista: %d-----\n", numElementos);
+}
+
+void _voltear()
+{
+    // Obtenemos el inicio de la lista
+    Elemento *inicio = lista->inicio;
+    // Creamos una nueva lista con el mismo dato
+    Lista *listaVolteada = crearLista(inicio->dato);
+
+    // Por cuestiones de implementación, obtenemos la referencia a la lista original
+    Lista *listaOriginal = lista;
+    // Y le asignamos a "lista" la lista volteada, para que la función _agregarDatoInicio la use
+    lista = listaVolteada;
+
+    // Recorremos la lista hasta el final
+    for (Elemento *it = inicio->siguiente; it != NULL; it = it->siguiente)
+    {
+        // Agregamos cada dato de la lista al principio de la nueva lista
+        _agregarDatoInicio(it->dato);
+    }
+
+    // También por cuestiones de implementación, asignamos a "lista" la lista original
+    // para vaciarla
+    lista = listaOriginal;
+    _vaciar();
+    // Y finalmente asignamos a "lista" la nueva lista volteada
+    lista = listaVolteada;
+
+    _mostrarLista();
 }
