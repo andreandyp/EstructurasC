@@ -4,6 +4,8 @@
 /* Una disculpa por la falta de acentos y signos de interrogación de apertura, no pude hacer que se mostraran en Windows*/
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+#include <stdbool.h>
 
 // Métodos para especificar la operación. No son importantes para la lista
 void agregar();
@@ -64,7 +66,7 @@ void _vaciar();
 void _obtenerTamano();
 void _voltear();
 void _ordenarConMerge();
-void _busquedaBinaria();
+void _busquedaBinaria(int buscar);
 
 int main(int argc, char const *argv[])
 {
@@ -135,7 +137,7 @@ void agregar()
         break;
     default:
         system("cls");
-        printf("-----Opción incorrecta-----\n");
+        printf("-----Opcion incorrecta-----\n");
         break;
     }
 }
@@ -172,7 +174,7 @@ void mostrar()
         break;
     default:
         system("cls");
-        printf("-----Opción incorrecta-----\n");
+        printf("-----Opcion incorrecta-----\n");
         break;
     }
 }
@@ -227,14 +229,14 @@ void eliminar()
         break;
     default:
         system("cls");
-        printf("-----Opción incorrecta-----\n");
+        printf("-----Opcion incorrecta-----\n");
         break;
     }
 }
 
 void otros()
 {
-    int opc = 0;
+    int opc = 0, buscar = 0;
     printf("1) Generar lista de ejemplo (0..9) (Eliminara la lista que este actualmente en uso)\n");
     printf("2) Generar lista aleatoria (20 elementos, -100..100) (Eliminara la lista que este actualmente en uso)\n");
     printf("3) Vaciar lista\n");
@@ -272,12 +274,14 @@ void otros()
         _ordenarConMerge();
         break;
     case 7:
+        printf("Que valor quieres buscar? ");
+        scanf("%d", &buscar);
         system("cls");
-        _busquedaBinaria();
+        _busquedaBinaria(buscar);
         break;
     default:
         system("cls");
-        printf("-----Opción incorrecta-----\n");
+        printf("-----Opcion incorrecta-----\n");
         break;
     }
 }
@@ -388,7 +392,7 @@ void _agregarDatoFin(int nuevoDato)
 
 void _agregarDatoEn(int posicion, int nuevoDato)
 {
-    // No es válido actualizar en una posición que no existe.
+    // No es válido agregar en una posición que no existe.
     if (posicion >= lista->elementos)
     {
         printf("-----No hay ningun elemento en esa posicion-----\n");
@@ -575,9 +579,134 @@ void _actualizarDatoEn(int posicion, int nuevoDato)
     }
 }
 
-void _eliminarAlInicio() {}
-void _eliminarAlFinal() {}
-void _eliminarEn(int posicion) {}
+void _eliminarAlInicio()
+{
+    // Obtenemos el inicio de la lista
+    Elemento *inicioActual = lista->inicio;
+
+    // En caso de que estemos al final de la lista ... (que este sea el último elemento)
+    if (inicioActual == lista->fin)
+    {
+        // ... quitamos también el final
+        lista->fin = NULL;
+    }
+    // Y obtenemos el siguiente elemento en la lista
+    // (en el caso de que sólo haya un elemento, esto será NULL)
+    Elemento *nuevoInicio = inicioActual->siguiente;
+
+    // Eliminamos el elemento
+    free(inicioActual);
+
+    // Disminuimos en 1 el número de elementos
+    --lista->elementos;
+
+    // Establecemos el nuevo inicio de la lista
+    lista->inicio = nuevoInicio;
+
+    // Y ya que el nuevo inicio no tiene elemento anterior, se lo quitamos
+    nuevoInicio->anterior = NULL;
+}
+
+void _eliminarAlFinal()
+{
+    // Obtenemos el final de la lista
+    Elemento *finalActual = lista->fin;
+
+    // En caso de que estemos al inicio de la lista ... (que este sea el último elemento)
+    if (finalActual == lista->inicio)
+    {
+        // ... quitamos también el inicio
+        lista->inicio = NULL;
+    }
+    // Y obtenemos el elemento anterior en la lista
+    // (en el caso de que sólo haya un elemento, esto será NULL)
+    Elemento *nuevoFinal = finalActual->anterior;
+
+    // Eliminamos el elemento
+    free(finalActual);
+
+    // Disminuimos en 1 el número de elementos
+    --lista->elementos;
+
+    // Establecemos el nuevo final de la lista
+    lista->fin = nuevoFinal;
+
+    // Y ya que el nuevo final no tiene elemento siguiente, se lo quitamos
+    nuevoFinal->siguiente = NULL;
+}
+
+void _eliminarEn(int posicion)
+{
+    // No es válido eliminar una posición que no existe.
+    if (posicion >= lista->elementos)
+    {
+        printf("-----No hay ningun elemento en esa posicion-----\n");
+        return;
+    }
+
+    // Si se quiere eliminar un valor en la posicion 0,
+    // nos podemos ahorrar el proceso simplemente eliminando el dato al inicio
+    if (posicion == 0)
+    {
+        _eliminarAlInicio();
+        return;
+    }
+
+    // Si se quiere añadir un valor en la posicion final,
+    // nos podemos ahorrar el proceso haciendo lo siguiente:
+    if (posicion == lista->elementos - 1)
+    {
+        _eliminarAlFinal();
+        return;
+    }
+
+    // Si queremos insertar en cualquier otro lado, continuamos con el proceso
+
+    // Con it vamos a iterar a través de la lista
+    Elemento *it = NULL;
+    int mitad = lista->elementos / 2;
+    // Si el elemento está antes de la mitad de la lista,
+    // iteramos desde el inicio
+    if (posicion < mitad)
+    {
+        it = lista->inicio;
+        for (int i = 0; i < posicion; i++)
+        {
+            it = it->siguiente;
+        }
+    }
+    // Si el elemento está después de la mitad de la lista,
+    // iteramos desde el final
+    else
+    {
+        it = lista->fin;
+        for (int i = lista->elementos - 1; i > posicion; i--)
+        {
+            it = it->anterior;
+        }
+    }
+
+    // Eliminamos el elemento de la siguiente manera:
+    // 1) Obtenemos el elemento anterior y al siguiente al que queremos eliminar
+    Elemento *antes = it->anterior;
+    Elemento *despues = it->siguiente;
+
+    // 2) Unimos el elemento que va antes del que queremos eliminar con el que le sigue
+    // y viceversa
+    antes->siguiente = despues;
+    despues->anterior = antes;
+
+    // 3) Disminuimos el número de elementos de la lista
+    ++lista->elementos;
+
+    // 4) Eliminamos el elemento
+    free(it);
+
+    // Pasamod de esto:
+    // Ex <-> Ey <-> Ez
+    // a esto:
+    // Ex <-> Ez
+}
 
 void _generarListaEjemplo()
 {
@@ -662,6 +791,120 @@ void _obtenerTamano()
     printf("-----La lista contiene %d elementos-----\n", lista->elementos);
 }
 
-void _voltear() {}
-void _ordenarConMerge() {}
-void _busquedaBinaria() {}
+void _voltear()
+{
+    // Preparamos 2 iteradores:
+    // uno que vaya iterando desde el principio hacia adelante,
+    // otro que vaya desde el final hacia atrás.
+    Elemento *itInicio = lista->inicio;
+    Elemento *itFinal = lista->fin;
+
+    // Vamos a iterar hasta la mitad del tamaño de la lista
+    int limite = lista->elementos / 2;
+
+    // Vamos a intercambiar los valores de cada elemento de la lista
+    // utilizando ambos iteradores previamente definidos para avanzar por ambos lados
+    // hasta que intercambiemos todos los elementos.
+    // Si la lista es de tamaño par, se intercambiaran todos los elementos
+    // Si es impar, se intercambiaran todos excepto el centro
+    for (int i = 1; i != limite; i++)
+    {
+        // Vamos a intercambiar n y m de lugar sin usar ninguna variable extra en 3 pasos:
+        // 1) n = n + m
+        itInicio->dato = itInicio->dato + itFinal->dato;
+        // 2) m = n - m
+        //    m = (n + m) - m
+        //    m = n
+        itFinal->dato = itInicio->dato - itFinal->dato;
+        // 3) n = n - m
+        //    n = (n + m) - m
+        //    n = n;
+        itInicio->dato = itInicio->dato - itFinal->dato;
+
+        // Continuamos iterando...
+        itInicio = itInicio->siguiente;
+        itFinal = itFinal->anterior;
+    }
+    printf("Lista desde el inicio:\n");
+    _mostrarListaDesdeInicio();
+    printf("Lista desde el final:\n");
+    _mostrarListaDesdeFin();
+}
+
+void _ordenarConMerge()
+{
+}
+
+void _busquedaBinaria(int buscar)
+{
+    if (lista == NULL || lista->inicio == NULL)
+    {
+        printf("-----La lista esta vacia-----\n");
+        return;
+    }
+
+    // Definimos una variable que nos ayudará a iterar sobre la lista
+    Elemento *it = lista->inicio;
+
+    // Y una variable que también nos ayudará a movernos
+    bool iterarAdelante = true;
+
+    // (Algoritmo) establecemos L y R
+    int posIzquierda = 0;
+    int posDerecha = lista->elementos - 1;
+    int mitad = 0;
+
+    while (posIzquierda <= posDerecha)
+    {
+        // (Algoritmo) obtenemos la mitad de la lista. Truncamos el número si es decimal
+        mitad = floor((posIzquierda + posDerecha) / 2);
+
+        // Nos vomeos hacia adelante
+        if (iterarAdelante)
+        {
+            // Desde la posicion izquierda hasta la mitad del arreglo
+            for (int i = posIzquierda; i < mitad; i++)
+            {
+                it = it->siguiente;
+            }
+        }
+
+        // o hacia atrás, según nos diga el algoritmo
+        else
+        {
+            // Desde la posicion derecha hasta la mitad del arreglo
+            for (int i = posDerecha; i > mitad; i--)
+            {
+                it = it->anterior;
+            }
+        }
+
+        // (Algoritmo) Si el dato de la mitad es menor al dato que buscamos
+        if (it->dato < buscar)
+        {
+            // (Algoritmo) L será m + 1
+            posIzquierda = mitad + 1;
+            it = it->siguiente;
+
+            // Iteraremos hacia adelante en la siguiente iteración del algoritmo
+            iterarAdelante = true;
+        }
+        // (Algoritmo) Si el dato de la mitad es mayor al dato que buscamos
+        else if (it->dato > buscar)
+        {
+            // (Algoritmo) R será m - 1
+            posDerecha = mitad - 1;
+            it = it->anterior;
+
+            // Iteraremos hacia atras en la siguiente iteración del algoritmo
+            iterarAdelante = false;
+        }
+        // (Algoritmo) Si el dato coincide con el dato de la mitad, ya lo encontramos
+        else
+        {
+            printf("El elemento %d se encontro en la posicion %d\n", it->dato, mitad);
+            return;
+        }
+    }
+    printf("No se encontro el valor");
+}
