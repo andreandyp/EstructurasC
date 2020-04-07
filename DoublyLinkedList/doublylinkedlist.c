@@ -67,6 +67,11 @@ void _obtenerTamano();
 void _voltear();
 void _ordenarConMerge();
 void _busquedaBinaria(int buscar);
+// Métodos para merge sort
+void _mergeSort(Lista *list, int limiteIzq, int limiteDer);
+void _merge(Lista *list, int limiteIzq, int mitad, int limiteDer);
+int _valorEn(Lista *list, int posicion);
+void _ponerValorEn(Lista *list, int posicion, int nuevoDato);
 
 int main(int argc, char const *argv[])
 {
@@ -243,7 +248,7 @@ void otros()
     printf("4) Obtener el tamano de la lista\n");
     printf("5) Voltear (reverse) la lista\n");
     printf("6) Ordenar la lista (Merge sort)\n");
-    printf("7) Buscar un elemento (Búsqueda binaria)\n");
+    printf("7) Buscar un elemento (Busqueda binaria)\n");
     printf("Escoge una opcion: ");
     scanf("%d", &opc);
     switch (opc)
@@ -833,6 +838,13 @@ void _voltear()
 
 void _ordenarConMerge()
 {
+    printf("Antes de ordenar\n");
+    _mostrarListaDesdeInicio();
+    Lista *temp = lista;
+    _mergeSort(temp, 0, lista->elementos - 1);
+    printf("Después de ordenar\n");
+    lista = temp;
+    _mostrarListaDesdeInicio();
 }
 
 void _busquedaBinaria(int buscar)
@@ -907,4 +919,137 @@ void _busquedaBinaria(int buscar)
         }
     }
     printf("No se encontro el valor");
+}
+
+void _mergeSort(Lista *list, int limiteIzq, int limiteDer)
+{
+    // Si el array es 2 o más, lo separamos
+    // Si no, continuamos con la otra mitad del arreglo
+    if (limiteIzq < limiteDer)
+    {
+        int mitad = (limiteIzq + limiteDer) / 2;
+        _mergeSort(list, limiteIzq, mitad);
+        _mergeSort(list, mitad + 1, limiteDer);
+        _merge(list, limiteIzq, mitad, limiteDer);
+    }
+}
+
+void _merge(Lista *list, int limiteIzq, int mitad, int limiteDer)
+{
+    // Índices para iterar sobre cada mitad y sobre la lista
+    int indexIzq, indexDer, indexMerge;
+
+    // Tamaño de las mitades
+    int tamIzq = mitad - limiteIzq + 1;
+    int tamDer = limiteDer - mitad;
+
+    // Mitades de la lista
+    int mitadIzquierda[tamIzq], mitadDerecha[tamDer];
+
+    for (indexIzq = 0; indexIzq < tamIzq; indexIzq++)
+    {
+        // De la lista a ordenar, obtenemos los elementos para la mitad izquierda
+        mitadIzquierda[indexIzq] = _valorEn(list, limiteIzq + indexIzq);
+    }
+    for (indexDer = 0; indexDer < tamDer; indexDer++)
+    {
+        // De la lista a ordenar, obtenemos los elementos para la mitad derecha
+        mitadDerecha[indexDer] = _valorEn(list, mitad + 1 + indexDer);
+    }
+
+    // Reiniciamos los índices para iterar desde el principio
+    indexIzq = 0;
+    indexDer = 0;
+    indexMerge = limiteIzq;
+
+    // Mientras ninguna de las mitades esté vacía,
+    // vamos a iterar sobre ambas a la vez
+    while (indexIzq < tamIzq && indexDer < tamDer)
+    {
+        // Si el valor en la mitad izquierda es menor que el de la mitad derecha
+        if (mitadIzquierda[indexIzq] <= mitadDerecha[indexDer])
+        {
+            // Ponemos dicho valor en la lista
+            _ponerValorEn(list, indexMerge, mitadIzquierda[indexIzq]);
+
+            // Y avanzamos sobre la izquierda
+            ++indexIzq;
+        }
+        // Si el valor en la mitad derecha es menor que el de la mitad izquierda
+        else
+        {
+            // Ponemos dicho valor en la lista
+            _ponerValorEn(list, indexMerge, mitadDerecha[indexDer]);
+            // Y avanzamos sobre la derecha
+            ++indexDer;
+        }
+        ++indexMerge;
+    }
+
+    // Cuando alguna de las mitades se quedó vacía...
+    // Copiamos los elementos de la mitad izquierda restantes (si hay)
+    while (indexIzq < tamIzq)
+    {
+        _ponerValorEn(list, indexMerge, mitadIzquierda[indexIzq]);
+        ++indexIzq;
+        ++indexMerge;
+    }
+
+    // Y también los de la derecha (si hay)
+    while (indexDer < tamDer)
+    {
+        _ponerValorEn(list, indexMerge, mitadDerecha[indexDer]);
+        ++indexDer;
+        ++indexMerge;
+    }
+}
+
+// Esta función hace lo mismo que "Mostrar elemento en"
+// Sólo que sin comentarios, sin impresiones y regresa el valor
+int _valorEn(Lista *list, int posicion)
+{
+    int mitad = list->elementos / 2;
+    if (posicion < mitad)
+    {
+        Elemento *it = list->inicio;
+        for (int i = 0; i < posicion; i++)
+        {
+            it = it->siguiente;
+        }
+        return it->dato;
+    }
+    else
+    {
+        Elemento *it = list->fin;
+        for (int i = list->elementos - 1; i > posicion; i--)
+        {
+            it = it->anterior;
+        }
+        return it->dato;
+    }
+}
+
+// Esta función hace lo mismo que "Actualizar elemento en"
+// Sólo que sin comentarios y sin impresiones
+void _ponerValorEn(Lista *list, int posicion, int nuevoDato)
+{
+    int mitad = list->elementos / 2;
+    if (posicion < mitad)
+    {
+        Elemento *it = list->inicio;
+        for (int i = 0; i < posicion; i++)
+        {
+            it = it->siguiente;
+        }
+        it->dato = nuevoDato;
+    }
+    else
+    {
+        Elemento *it = list->fin;
+        for (int i = list->elementos - 1; i > posicion; i--)
+        {
+            it = it->anterior;
+        }
+        it->dato = nuevoDato;
+    }
 }
