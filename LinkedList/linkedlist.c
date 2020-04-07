@@ -60,6 +60,7 @@ int main(int argc, char const *argv[])
     // Menú para seleccionar la operación
     while (1)
     {
+        printf("------Lista enlazada-----\n");
         printf("1) Agregar...\n");    // Create
         printf("2) Mostrar...\n");    // Read
         printf("3) Actualizar...\n"); // Update
@@ -369,9 +370,9 @@ void _mostrarLista()
     // El elemento que tiene NULL en "siguiente" es el fin de la lista
     for (Elemento *it = lista->inicio; it != NULL; it = it->siguiente)
     {
-        printf("%d\n", it->dato);
+        printf("%d, ", it->dato);
     }
-    printf("-----\n");
+    printf("\n-----\n");
 }
 
 void _mostrarDatoEn(int posicion)
@@ -482,6 +483,13 @@ void _eliminarEn(int posicion)
         printf("-----No se pueden posiciones negativas-----\n");
         return;
     }
+
+    // Si la posicion es cero, podemos ahorrarnos todo el proceso simplemente eliminando al inicio
+    if (posicion == 0)
+    {
+        _eliminarAlInicio();
+        return;
+    }
     Elemento *it = lista->inicio;
 
     // Recorremos la lista hasta la posicion indicada MENOS 1.
@@ -514,6 +522,13 @@ void _eliminarEn(int posicion)
 
     // Obtenemos el elemento que queremos eliminar
     Elemento *aEliminar = it->siguiente;
+
+    // En caso de que se haya seleccionado el último elemento de la lista,
+    // ponemos al penúltimo elemento como el final
+    if (aEliminar == lista->fin)
+    {
+        lista->fin = it;
+    }
 
     // Obtenemos el elemento que le sigue al que queremos eliminar
     Elemento *siguiente = aEliminar->siguiente;
