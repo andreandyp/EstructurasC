@@ -2,7 +2,8 @@
 
 Este repo contiene varias estructuras de datos en C. Personalmente no me gusta C, pero quise aprender cómo funcionan las estructuras de datos a bajo nivel. Contiene las siguientes estructuras:
 
-- Lista Enlazada
+- Lista enlazada
+- Lista doblemente enlazada
 
 ## 👨‍🏫👩‍🏫 Nota para maestros
 
