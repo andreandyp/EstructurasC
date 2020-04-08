@@ -36,7 +36,7 @@ gcc doublylinkedlist.c -o doublylinkedlist
 
 Compilar con gcc (Windows, es necesario MinGW):
 
-````
+```
 gcc doublylinkedlist.c -o doublylinkedlist.exe
-doublylinkedlist.exe```
-````
+doublylinkedlist.exe
+```
