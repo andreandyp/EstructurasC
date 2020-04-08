@@ -28,8 +28,15 @@ Esta implementación contiene las siguientes operaciones:
 ### Uso
 
 Compilar con gcc (Linux):
-`gcc doublylinkedlist.c -o doublylinkedlist`
-`./doublylinkedlist`
+
+```
+gcc doublylinkedlist.c -o doublylinkedlist
+./doublylinkedlist
+```
+
 Compilar con gcc (Windows, es necesario MinGW):
-`gcc doublylinkedlist.c -o doublylinkedlist.exe`
-`doublylinkedlist.exe`
+
+````
+gcc doublylinkedlist.c -o doublylinkedlist.exe
+doublylinkedlist.exe```
+````
