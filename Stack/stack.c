@@ -360,6 +360,11 @@ void _vaciar()
 
 void _aumentarTamano()
 {
+    if (pila->tamanoMaximo <= 0)
+    {
+        printf("La pila no tiene limite, no puede aumentar el tamano, solo disminuirlo\n");
+        return;
+    }
     // Pedimos el tamaño nuevo
     int nuevoTamano = 0;
     printf("A cuanto quieres aumentar el tamano? (n < 0 == sin limite): ");
@@ -378,7 +383,7 @@ void _aumentarTamano()
         // Si sí, se asigna el nuevo tamaño
         pila->tamanoMaximo = nuevoTamano;
         printf("Nuevo tamano: ");
-        if (nuevoTamano < 0)
+        if (nuevoTamano <= 0)
         {
             printf("sin limite\n");
         }
@@ -399,37 +404,46 @@ void _disminuirTamano()
     scanf("%d", &nuevoTamano);
     printf("-----\n");
 
-    // Si el nuevo tamaño es menor a 0 o es mayor al tamaño igual
-    if (nuevoTamano < 0 || nuevoTamano >= pila->tamanoMaximo)
+    // Si el nuevo tamaño es menor a 0
+    if (nuevoTamano <= 0)
     {
-        // Entonces no se puede alterar el nuevo tamaño
+        // Entonces no se puede alterar el nuevo tamaño (no se puede disminuir a "sin limite")
+        printf("La pila no se puede disminuir a 'sin limite'.\n");
+        printf("En ese caso, aumenta el tamano\n");
+        printf("-----\n");
+        return;
+    }
+
+    // Si el nuevo tamaño es mayor al tamaño de la pila (y considerando que la pila tiene tamaño infinito)
+    if (nuevoTamano >= pila->tamanoMaximo && pila->tamanoMaximo > 0)
+    {
+        // Entonces no se puede disminuir a un tamaño mayor al que ya tiene
         printf("No se puede disminuir el tamano a un numero mayor\n");
         printf("En ese caso, aumenta el tamano\n");
+        printf("-----\n");
+        return;
+    }
+
+    // Obtenemos el tamaño actual
+    int actual = pila->elementos;
+
+    // Iteramos desde el tamaño actual hasta el nuevo tamaño para sacar los elementos
+    for (int i = actual; i > nuevoTamano; i--)
+    {
+        Elemento *it = _desapilar();
+        free(it);
+    }
+
+    // Asignamos el nuevo tamaño
+    pila->tamanoMaximo = nuevoTamano;
+    printf("Nuevo tamano: ");
+    if (nuevoTamano < 0)
+    {
+        printf("sin limite\n");
     }
     else
     {
-        // Obtenemos el tamaño actual
-        int actual = pila->elementos;
-
-        // Iteramos desde el tamaño actual hasta el nuevo tamaño para sacar los elementos
-        for (int i = actual; i > nuevoTamano; i--)
-        {
-            Elemento *it = _desapilar();
-            printf("%d\n", it->dato);
-            free(it);
-        }
-
-        // Asignamos el nuevo tamaño
-        pila->tamanoMaximo = nuevoTamano;
-        printf("Nuevo tamano: ");
-        if (nuevoTamano < 0)
-        {
-            printf("sin limite\n");
-        }
-        else
-        {
-            printf("%d\n", pila->tamanoMaximo);
-        }
+        printf("%d\n", pila->tamanoMaximo);
     }
     printf("-----\n");
 }
