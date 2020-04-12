@@ -5,6 +5,7 @@ Este repo contiene varias estructuras de datos en C. Personalmente no me gusta C
 - Lista enlazada
 - Lista doblemente enlazada
 - Pila
+- Cola
 
 ## 👨‍🏫👩‍🏫 Nota para maestros
 
