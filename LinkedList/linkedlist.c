@@ -364,14 +364,16 @@ void _agregarDatoEn(int posicion, int nuevoDato)
 void _mostrarLista()
 {
     printf("-----\n");
+    printf("NULL<-");
     // Recorremos la lista: empezamos en el inicio y vamos avanzando a través de los elementos
     // mediante la propiedad "siguiente" de cada elemento
     // el límite es cuando el siguiente elemento sea NULL.
     // El elemento que tiene NULL en "siguiente" es el fin de la lista
     for (Elemento *it = lista->inicio; it != NULL; it = it->siguiente)
     {
-        printf("%d, ", it->dato);
+        printf("(%d)<->", it->dato);
     }
+    printf("NULL\n");
     printf("\n-----\n");
 }
 
