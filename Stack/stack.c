@@ -269,7 +269,7 @@ Elemento *_mostrarCima()
     // Comprobamos que no sea NULL (es decir, que la pila no esté vacía)
     if (cima == NULL)
     {
-        printf("-----La pila está vacía-----\n");
+        printf("-----La pila esta vacia-----\n");
         return NULL;
     }
     printf("La cima de la pila tiene el dato (%d)\n", cima->dato);
@@ -300,18 +300,25 @@ void _mostrarEstado()
 
 Elemento *_desapilar()
 {
+    // Comprobamos que la pila no esté vacía
+    if (pila == NULL)
+    {
+        printf("-----La pila esta vacia-----\n");
+        return NULL;
+    }
+
     // Obtenemos la cima de la pila
     Elemento *cima = pila->top;
 
     // Comprobamos que no sea NULL (es decir, que la pila no esté vacía)
     if (cima == NULL)
     {
-        printf("-----La pila está vacía-----\n");
+        printf("-----La pila esta vacia-----\n");
         return NULL;
     }
 
     // Si sí hay elementos, entonces
-    // 1) Obtenemos el elemento que hasta abajo de la cima
+    // 1) Obtenemos el elemento que está abajo de la cima
     Elemento *nuevaCima = cima->inferior;
 
     // 2) Y lo hacemos la nueva cima,

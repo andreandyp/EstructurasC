@@ -4,7 +4,7 @@ Esta implementación contiene las siguientes operaciones:
 
 - Agregar datos _(Create)_
   - Apilar _(push)_.
-- Mostrar la lista _(Read)_
+- Mostrar la pila _(Read)_
   - Mostrar toda la pila.
   - Mostrar la cima de la pila _(peek)_.
   - Mostrar estado de la pila (llena/vacía, elementos insertados, tamaño máximo).
