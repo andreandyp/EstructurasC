@@ -6,6 +6,7 @@ Este repo contiene varias estructuras de datos en C. Personalmente no me gusta C
 - Lista doblemente enlazada
 - Pila
 - Cola
+- Árbol binario
 
 ## 👨‍🏫👩‍🏫 Nota para maestros
 
